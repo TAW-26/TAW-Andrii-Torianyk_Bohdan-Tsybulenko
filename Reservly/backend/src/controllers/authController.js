@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const asyncHandler = require('../middleware/asyncHandler');
 
 // Generowanie tokenu JWT
 const generateToken = (id) =>
@@ -7,8 +8,8 @@ const generateToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 
-// Rejestracja nowego użytkownika
-const register = async (req, res) => {
+// POST /api/auth/register – rejestracja nowego użytkownika
+const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const exists = await User.findOne({ email });
@@ -20,10 +21,10 @@ const register = async (req, res) => {
     token: generateToken(user._id),
     user: { id: user._id, name: user.name, email: user.email, role: user.role },
   });
-};
+});
 
-// Logowanie użytkownika
-const login = async (req, res) => {
+// POST /api/auth/login – logowanie użytkownika
+const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email }).select('+password');
@@ -35,11 +36,11 @@ const login = async (req, res) => {
     token: generateToken(user._id),
     user: { id: user._id, name: user.name, email: user.email, role: user.role },
   });
-};
+});
 
-// Pobranie danych zalogowanego użytkownika
-const getMe = async (req, res) => {
+// GET /api/auth/me – dane zalogowanego użytkownika
+const getMe = asyncHandler(async (req, res) => {
   res.json({ id: req.user._id, name: req.user.name, email: req.user.email, role: req.user.role });
-};
+});
 
 module.exports = { register, login, getMe };

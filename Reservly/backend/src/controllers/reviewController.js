@@ -1,16 +1,17 @@
 const Review = require('../models/Review');
 const Reservation = require('../models/Reservation');
+const asyncHandler = require('../middleware/asyncHandler');
 
-// Pobranie opinii o danym boisku
-const getFieldReviews = async (req, res) => {
+// opinie o danym boisku
+const getFieldReviews = asyncHandler(async (req, res) => {
   const reviews = await Review.find({ field: req.params.fieldId })
     .populate('user', 'name')
     .sort({ createdAt: -1 });
   res.json(reviews);
-};
+});
 
-// Dodanie opinii (tylko użytkownik który miał rezerwację)
-const createReview = async (req, res) => {
+// Pdodanie opinii
+const createReview = asyncHandler(async (req, res) => {
   const { fieldId, rating, comment } = req.body;
 
   // Sprawdzenie czy użytkownik faktycznie rezerwował to boisko
@@ -31,10 +32,10 @@ const createReview = async (req, res) => {
   const review = await Review.create({ user: req.user._id, field: fieldId, rating, comment });
   await review.populate('user', 'name');
   res.status(201).json(review);
-};
+});
 
-// Usunięcie opinii (właściciel lub admin)
-const deleteReview = async (req, res) => {
+// usunięcie opinii
+const deleteReview = asyncHandler(async (req, res) => {
   const review = await Review.findById(req.params.id);
   if (!review) return res.status(404).json({ message: 'Opinia nie została znaleziona' });
 
@@ -47,6 +48,6 @@ const deleteReview = async (req, res) => {
 
   await review.deleteOne();
   res.json({ message: 'Opinia została usunięta' });
-};
+});
 
 module.exports = { getFieldReviews, createReview, deleteReview };
