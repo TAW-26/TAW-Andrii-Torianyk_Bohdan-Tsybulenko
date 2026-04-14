@@ -13,14 +13,18 @@ const protect = async (req, res, next) => {
     return res.status(401).json({ message: 'Brak autoryzacji – nie podano tokenu' });
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  req.user = await User.findById(decoded.id);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id);
 
-  if (!req.user) {
-    return res.status(401).json({ message: 'Użytkownik nie istnieje' });
+    if (!req.user) {
+      return res.status(401).json({ message: 'Użytkownik nie istnieje' });
+    }
+
+    next();
+  } catch (err) {
+    next(err); 
   }
-
-  next();
 };
 
 // Middleware tylko dla administratora

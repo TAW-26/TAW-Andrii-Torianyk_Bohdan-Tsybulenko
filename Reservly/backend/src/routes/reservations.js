@@ -22,9 +22,10 @@ router.get('/availability/:fieldId', getFieldAvailability);
 // Tworzenie rezerwacji
 router.post('/', protect, createReservation);
 
+// Anulowanie rezerwacji (właściciel lub admin)
+router.patch('/:id/cancel', protect, cancelReservation);
+
 // Przeniesienie rezerwacji na inny termin (tylko właściciel)
 router.patch('/:id', protect, updateReservation);
 
-// Anulowanie rezerwacji (właściciel lub admin)
-router.patch('/:id/cancel', protect, cancelReservation);
 module.exports = router;

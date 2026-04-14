@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const morgan  = require('morgan');
+const rateLimit = require('express-rate-limit');
 const connectDB     = require('./config/db');
 const errorHandler  = require('./middleware/errorHandler');
 
@@ -19,6 +20,16 @@ connectDB();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+
+// Rate limiting dla endpointów auth
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minut
+  max: 20, // max 20 prób w ciągu 15 minut
+  message: { message: 'Za dużo prób logowania, spróbuj za 15 minut' },
+});
+
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // Trasy API
 app.use('/api/auth',         authRoutes);
