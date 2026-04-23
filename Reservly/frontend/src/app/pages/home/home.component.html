@@ -1,0 +1,159 @@
+<!-- Hero Section -->
+<div class="hero">
+  <div class="hero-bg">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">🏆 Najlepsza platforma rezerwacji w Polsce</div>
+    <h1>
+      Zarezerwuj boisko
+      <span class="gradient-text">w kilka sekund</span>
+    </h1>
+    <p>Znajdź i zarezerwuj idealne boisko sportowe w Twojej okolicy. Szybko, łatwo i bezpiecznie.</p>
+    <div class="hero-buttons">
+      <button mat-flat-button class="btn-primary" routerLink="/fields">
+        <span>Znajdź boisko</span>
+        <span class="btn-arrow">▶</span>
+      </button>
+      <button mat-stroked-button class="btn-secondary" routerLink="/reservations">
+        Moje rezerwacje
+      </button>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="stat-num">{{ counters.fields }}+</span>
+        <span class="stat-label">Boisk</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <span class="stat-num">{{ counters.reservations }}+</span>
+        <span class="stat-label">Rezerwacji/dzień</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <span class="stat-num">{{ counters.users }}+</span>
+        <span class="stat-label">Użytkowników</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-card-float card-1">
+      <span>⚽</span>
+      <div>
+        <strong>Boisko Orlik</strong>
+        <p>Dostępne dziś</p>
+      </div>
+    </div>
+    <div class="hero-card-float card-2">
+      <span>🏀</span>
+      <div>
+        <strong>Hala AWF</strong>
+        <p>50% zniżki</p>
+      </div>
+    </div>
+    <div class="hero-card-float card-3">
+      <span>🎾</span>
+      <div>
+        <strong>Kort tenisowy</strong>
+        <p>Wolne od 14:00</p>
+      </div>
+    </div>
+    <div class="hero-emoji-main">🏟️</div>
+  </div>
+</div>
+
+<!-- Features -->
+<div class="features-section">
+  <div class="features-grid">
+    <div class="feature-card animate-on-scroll" *ngFor="let f of features; let i = index"
+      [style.animation-delay]="i * 0.1 + 's'">
+      <div class="feature-icon">{{ f.icon }}</div>
+      <h3>{{ f.title }}</h3>
+      <p>{{ f.desc }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Jak to działa -->
+<div class="how-section">
+  <div class="section-header animate-on-scroll">
+    <span class="section-badge">Prosty proces</span>
+    <h2>Jak to działa?</h2>
+    <p>Rezerwacja boiska nigdy nie była tak prosta</p>
+  </div>
+
+  <div class="steps-container">
+    <div class="step-item animate-on-scroll" *ngFor="let step of steps; let last = last; let i = index"
+      [style.animation-delay]="i * 0.15 + 's'">
+      <div class="step-card">
+        <div class="step-icon-wrap">
+          <span class="step-big-icon">{{ step.icon }}</span>
+          <div class="step-number-badge">{{ step.number }}</div>
+        </div>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.desc }}</p>
+      </div>
+      <div class="step-connector" *ngIf="!last">
+        <div class="connector-line"></div>
+        <span class="connector-arrow">▶</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Polecane boiska -->
+<div class="featured-section">
+  <div class="section-header animate-on-scroll">
+    <span class="section-badge">Popularne</span>
+    <h2>Polecane boiska</h2>
+    <p>Najczęściej rezerwowane obiekty sportowe</p>
+  </div>
+
+  <div class="fields-grid">
+    <div class="field-card animate-on-scroll" *ngFor="let field of featuredFields; let i = index"
+      [style.animation-delay]="i * 0.1 + 's'"
+      [routerLink]="['/fields', field._id]">
+      <div class="field-card-image">
+  <img [src]="getFieldImage(field.type)" [alt]="field.name" class="field-img">
+  <div class="field-card-overlay">
+    <span class="field-type-badge">{{ getEmoji(field.type) }} {{ field.type }}</span>
+  </div>
+</div>
+      <div class="field-card-body">
+        <h3>{{ field.name }}</h3>
+        <p class="field-location">📍 {{ field.location }}</p>
+        <div class="field-card-footer">
+          <span class="field-price">{{ field.pricePerHour }} zł / h</span>
+          <button class="field-btn" [routerLink]="['/fields', field._id]">
+            Sprawdź ▶
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="see-all animate-on-scroll">
+    <button mat-stroked-button class="btn-all" routerLink="/fields">
+      Zobacz wszystkie boiska →
+    </button>
+  </div>
+</div>
+
+<!-- CTA Banner -->
+<div class="cta-section animate-on-scroll">
+  <div class="cta-orb cta-orb-1"></div>
+  <div class="cta-orb cta-orb-2"></div>
+  <div class="cta-content">
+    <h2>Gotowy do gry? 🏆</h2>
+    <p>Dołącz do tysięcy sportowców którzy już korzystają z Reservly</p>
+    <button mat-flat-button class="btn-cta" routerLink="/fields">
+      Zarezerwuj teraz ▶
+    </button>
+  </div>
+</div>
