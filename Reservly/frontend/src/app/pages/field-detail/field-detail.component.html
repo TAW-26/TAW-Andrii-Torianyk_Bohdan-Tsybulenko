@@ -1,0 +1,164 @@
+<div class="detail-page">
+
+  <!-- Back -->
+  <a routerLink="/fields" class="back-link slide-in-up" style="animation-delay:0s">
+    ← Wróć do listy
+  </a>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Ładowanie boiska...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-state" *ngIf="error">
+    <span>⚠️</span>
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && field">
+
+    <!-- ── Hero Section ─────────────────────────── -->
+    <div class="hero-section slide-in-up" style="animation-delay:0.05s">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+      <div class="hero-grid"></div>
+
+      <div class="hero-image-wrap">
+        <img [src]="getFieldImage(field.type)" [alt]="field.name" class="hero-img" />
+        <div class="hero-img-overlay"></div>
+        <span class="hero-emoji">{{ typeEmojis[field.type] }}</span>
+      </div>
+
+      <div class="hero-info">
+        <span class="hero-badge">{{ typeEmojis[field.type] }} {{ field.type }}</span>
+        <h1>{{ field.name }}</h1>
+        <p class="hero-location">📍 {{ field.location }}</p>
+
+        <div class="hero-meta">
+          <div class="meta-item">
+            <span class="meta-icon">💰</span>
+            <div>
+              <span class="meta-val">{{ field.pricePerHour }} zł</span>
+              <span class="meta-sub">za godzinę</span>
+            </div>
+          </div>
+          <div class="meta-divider"></div>
+          <div class="meta-item" *ngIf="reviews.length > 0">
+            <span class="meta-icon">⭐</span>
+            <div>
+              <span class="meta-val">{{ reviews.length }}</span>
+              <span class="meta-sub">opinii</span>
+            </div>
+          </div>
+          <div class="meta-item" *ngIf="reviews.length === 0">
+            <span class="meta-icon">🆕</span>
+            <div>
+              <span class="meta-val">Brak</span>
+              <span class="meta-sub">opinii</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reserve CTA -->
+        <div class="reserve-box">
+          <div class="reserve-preview" *ngIf="selectedStartTime">
+            <span class="reserve-date">{{ selectedDate | date:'d MMM yyyy' }}</span>
+            <span class="reserve-time">{{ selectedStartTime }} – {{ selectedEndTime }}</span>
+          </div>
+          <p class="reserve-hint" *ngIf="!selectedStartTime">Wybierz datę i godzinę poniżej</p>
+
+          <button class="btn-reserve"
+            (click)="reserve()"
+            [disabled]="!selectedStartTime || reservationLoading || !auth.isLoggedIn()">
+            <div class="btn-spinner" *ngIf="reservationLoading"></div>
+            <span *ngIf="!reservationLoading">
+              {{ selectedStartTime ? 'Zarezerwuj teraz ▶' : 'Wybierz godzinę ▶' }}
+            </span>
+          </button>
+
+          <p class="login-hint" *ngIf="!auth.isLoggedIn()">
+            <a routerLink="/login">Zaloguj się</a> aby zarezerwować
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Availability ─────────────────────────── -->
+    <div class="section slide-in-up" style="animation-delay:0.1s">
+      <div class="section-header">
+        <span class="section-badge">Kalendarz</span>
+        <h2>Sprawdź dostępność</h2>
+        <p>Wybierz datę i wolną godzinę</p>
+      </div>
+
+      <div class="avail-layout">
+        <!-- Date picker -->
+        <div class="date-card">
+          <p class="date-card-label">📅 Wybierz datę</p>
+          <input
+            type="date"
+            class="date-input"
+            [value]="selectedDate | date:'yyyy-MM-dd'"
+            (change)="onNativeDateChange($event)"
+            [min]="today | date:'yyyy-MM-dd'"
+          />
+          <p class="selected-date-display">{{ selectedDate | date:'EEEE, d MMMM yyyy' }}</p>
+        </div>
+
+        <!-- Time slots -->
+        <div class="slots-card">
+          <p class="slots-label">🕐 Dostępne godziny</p>
+          <div class="time-slots">
+            <button
+              *ngFor="let slot of timeSlots"
+              class="slot-btn"
+              [class.taken]="isSlotTaken(slot)"
+              [class.selected]="slot === selectedStartTime"
+              (click)="selectSlot(slot)"
+              [disabled]="isSlotTaken(slot)"
+            >
+              {{ slot }}
+            </button>
+          </div>
+          <div class="slots-legend">
+            <span class="legend-item"><span class="dot dot-free"></span> Wolne</span>
+            <span class="legend-item"><span class="dot dot-selected"></span> Wybrane</span>
+            <span class="legend-item"><span class="dot dot-taken"></span> Zajęte</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Reviews ──────────────────────────────── -->
+    <div class="section slide-in-up" style="animation-delay:0.15s">
+      <div class="section-header">
+        <span class="section-badge">Społeczność</span>
+        <h2>Opinie użytkowników</h2>
+        <p>Co mówią o tym boisku</p>
+      </div>
+
+      <div class="empty-reviews" *ngIf="reviews.length === 0">
+        <span class="empty-icon">💬</span>
+        <h3>Brak opinii</h3>
+        <p>Bądź pierwszy i zostaw swoją opinię po wizycie!</p>
+      </div>
+
+      <div class="reviews-grid" *ngIf="reviews.length > 0">
+        <div class="review-card card-enter" *ngFor="let review of reviews; let i = index"
+          [style.animation-delay]="i * 0.07 + 's'">
+          <div class="review-header">
+            <div class="avatar">{{ review.user?.name?.[0] || 'U' }}</div>
+            <div class="review-meta">
+              <strong>{{ review.user?.name || 'Użytkownik' }}</strong>
+              <div class="review-stars">{{ getStars(review.rating) }}</div>
+            </div>
+          </div>
+          <p class="review-comment">{{ review.comment }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

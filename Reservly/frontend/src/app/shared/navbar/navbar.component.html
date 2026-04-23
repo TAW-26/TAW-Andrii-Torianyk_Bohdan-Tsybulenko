@@ -1,0 +1,75 @@
+<nav class="navbar">
+  <!-- Logo -->
+  <a routerLink="/" class="logo">
+    <div class="logo-emblem">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" 
+          fill="none" stroke="#6C63FF" stroke-width="2"/>
+        <polygon points="16,7 24,11.5 24,20.5 16,25 8,20.5 8,11.5" 
+          fill="rgba(108,99,255,0.2)" stroke="#00D4AA" stroke-width="1"/>
+        <circle cx="16" cy="16" r="3" fill="#6C63FF"/>
+      </svg>
+    </div>
+    <div class="logo-text-group">
+      <span class="logo-text">Reservly</span>
+      <span class="logo-tagline">Sport Booking</span>
+    </div>
+  </a>
+
+  <!-- Linki -->
+  <div class="nav-links">
+    <a routerLink="/" routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Strona główna</span>
+      <span class="nav-underline"></span>
+    </a>
+    <a routerLink="/fields" routerLinkActive="active-link" class="nav-item">
+      <span class="nav-icon">🏟️</span>
+      <span class="nav-label">Boiska</span>
+      <span class="nav-underline"></span>
+    </a>
+    <a routerLink="/reservations" routerLinkActive="active-link" class="nav-item">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Rezerwacje</span>
+      <span class="nav-underline"></span>
+    </a>
+    <a routerLink="/admin" routerLinkActive="active-link" class="nav-item"
+      *ngIf="auth.isAdmin()">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Panel admina</span>
+      <span class="nav-underline"></span>
+    </a>
+  </div>
+
+  <!-- Auth -->
+  <div class="auth-section">
+    <div class="auth-buttons" *ngIf="!auth.isLoggedIn()">
+      <a routerLink="/login" class="btn-login">Zaloguj się</a>
+      <a routerLink="/register" class="btn-register">Zarejestruj</a>
+    </div>
+
+    <div class="user-menu" *ngIf="auth.isLoggedIn()">
+      <div class="user-info">
+        <span class="user-role-badge" *ngIf="auth.isAdmin()">Admin</span>
+      </div>
+      <button class="avatar-btn" [matMenuTriggerFor]="userMenu">
+        <div class="avatar-wrapper">
+          <span class="avatar">{{ getInitials() }}</span>
+          <span class="avatar-status"></span>
+        </div>
+        <div class="avatar-text">
+          <span class="avatar-name">{{ getUserName() }}</span>
+          <span class="avatar-sub">{{ auth.isAdmin() ? 'Administrator' : 'Użytkownik' }}</span>
+        </div>
+        <span class="avatar-arrow">▾</span>
+      </button>
+      <mat-menu #userMenu="matMenu" class="user-dropdown">
+        <a mat-menu-item routerLink="/reservations">📅 Moje rezerwacje</a>
+        <a mat-menu-item routerLink="/admin" *ngIf="auth.isAdmin()">⚙️ Panel admina</a>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="logout-btn">🚪 Wyloguj</button>
+      </mat-menu>
+    </div>
+  </div>
+</nav>

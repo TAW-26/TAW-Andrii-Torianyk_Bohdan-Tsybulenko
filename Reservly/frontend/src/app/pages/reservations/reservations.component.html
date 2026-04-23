@@ -1,0 +1,211 @@
+<div class="reservations-page">
+
+  <!-- Hero Bar -->
+  <div class="page-hero slide-in-up" style="animation-delay:0s">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-text">
+      <span class="hero-badge">📅 Moje rezerwacje</span>
+      <h1>Twoje <span class="gradient-text">rezerwacje</span></h1>
+      <p>Zarządzaj swoimi rezerwacjami boisk sportowych</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="stat-num">{{ getActive().length }}</span>
+        <span class="stat-label">Aktywne</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <span class="stat-num">{{ getCancelled().length }}</span>
+        <span class="stat-label">Anulowane</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <span class="stat-num">{{ reservations.length }}</span>
+        <span class="stat-label">Łącznie</span>
+      </div>
+    </div>
+    <button class="btn-new" routerLink="/fields">+ Nowa rezerwacja</button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Ładowanie rezerwacji...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-state" *ngIf="error">
+    <span>⚠️</span><p>{{ error }}</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-section slide-in-up" style="animation-delay:0.1s" *ngIf="!loading && !error">
+
+    <div class="tab-header">
+      <button class="tab-btn" [class.active]="activeTab === 'active'" (click)="activeTab = 'active'">
+        <span class="tab-dot dot-active"></span>
+        Aktywne
+        <span class="tab-count">{{ getActive().length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'cancelled'" (click)="activeTab = 'cancelled'">
+        <span class="tab-dot dot-cancelled"></span>
+        Anulowane
+        <span class="tab-count">{{ getCancelled().length }}</span>
+      </button>
+    </div>
+
+    <!-- Active -->
+    <div class="tab-content" *ngIf="activeTab === 'active'">
+      <div class="empty-state" *ngIf="getActive().length === 0">
+        <span class="empty-icon">📅</span>
+        <h3>Brak aktywnych rezerwacji</h3>
+        <p>Nie masz jeszcze żadnych rezerwacji — zarezerwuj swoje pierwsze boisko!</p>
+        <button class="btn-empty" routerLink="/fields">Znajdź boisko ▶</button>
+      </div>
+      <div class="reservations-grid" *ngIf="getActive().length > 0">
+        <div class="res-card card-enter"
+          *ngFor="let r of getActive(); let i = index"
+          [style.animation-delay]="i * 0.07 + 's'">
+          <div class="res-card-img-wrap">
+            <img [src]="getFieldImage(r.field?.type)" [alt]="r.field?.name" class="res-card-img" />
+            <div class="res-card-img-overlay"></div>
+            <span class="res-img-badge">{{ getEmoji(r.field?.type) }} {{ r.field?.type }}</span>
+            <span class="res-status-badge" [ngClass]="'status-' + getStatusColor(r.status)">
+              ● {{ getStatusLabel(r.status) }}
+            </span>
+          </div>
+          <div class="res-card-body">
+            <h3>{{ r.field?.name }}</h3>
+            <p class="res-location">📍 {{ r.field?.location }}</p>
+            <div class="res-details">
+              <div class="res-detail-item">
+                <span class="res-detail-icon">📅</span>
+                <span>{{ r.date | date:'d MMM yyyy' }}</span>
+              </div>
+              <div class="res-detail-item">
+                <span class="res-detail-icon">🕐</span>
+                <span>{{ r.startTime }} – {{ r.endTime }}</span>
+              </div>
+              <div class="res-detail-item" *ngIf="r.field?.pricePerHour">
+                <span class="res-detail-icon">💰</span>
+                <span>{{ r.field.pricePerHour }} zł / h</span>
+              </div>
+            </div>
+            <div class="res-card-footer">
+              <button class="btn-detail" [routerLink]="['/fields', r.field?._id]">Szczegóły</button>
+              <button class="btn-review" (click)="openReview(r)" *ngIf="isPast(r.date)">
+                ⭐ Opinia
+              </button>
+              <button class="btn-cancel" (click)="cancel(r._id)" *ngIf="!isPast(r.date)">
+                Anuluj ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancelled -->
+    <div class="tab-content" *ngIf="activeTab === 'cancelled'">
+      <div class="empty-state" *ngIf="getCancelled().length === 0">
+        <span class="empty-icon">✅</span>
+        <h3>Brak anulowanych rezerwacji</h3>
+        <p>Świetnie — wszystkie Twoje rezerwacje są aktywne!</p>
+      </div>
+      <div class="reservations-grid" *ngIf="getCancelled().length > 0">
+        <div class="res-card card-enter cancelled"
+          *ngFor="let r of getCancelled(); let i = index"
+          [style.animation-delay]="i * 0.07 + 's'">
+          <div class="res-card-img-wrap">
+            <img [src]="getFieldImage(r.field?.type)" [alt]="r.field?.name" class="res-card-img" />
+            <div class="res-card-img-overlay cancelled-overlay"></div>
+            <span class="res-img-badge">{{ getEmoji(r.field?.type) }} {{ r.field?.type }}</span>
+            <span class="res-status-badge status-cancelled">● Anulowana</span>
+          </div>
+          <div class="res-card-body">
+            <h3>{{ r.field?.name }}</h3>
+            <p class="res-location">📍 {{ r.field?.location }}</p>
+            <div class="res-details">
+              <div class="res-detail-item">
+                <span class="res-detail-icon">📅</span>
+                <span>{{ r.date | date:'d MMM yyyy' }}</span>
+              </div>
+              <div class="res-detail-item">
+                <span class="res-detail-icon">🕐</span>
+                <span>{{ r.startTime }} – {{ r.endTime }}</span>
+              </div>
+            </div>
+            <div class="res-card-footer">
+              <button class="btn-rebook" [routerLink]="['/fields', r.field?._id]">Zarezerwuj ponownie ▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Review Modal ──────────────────────────── -->
+<div class="modal-backdrop" *ngIf="reviewModal.open" (click)="closeReview()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <button class="modal-close" (click)="closeReview()">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-field-img-wrap">
+        <img [src]="getFieldImage(reviewModal.reservation?.field?.type)" class="modal-field-img" />
+        <div class="modal-field-img-overlay"></div>
+      </div>
+      <div class="modal-title-block">
+        <span class="modal-badge">⭐ Wystaw opinię</span>
+        <h2>{{ reviewModal.reservation?.field?.name }}</h2>
+        <p>📍 {{ reviewModal.reservation?.field?.location }}</p>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Star rating -->
+      <p class="modal-label">Ocena</p>
+      <div class="star-row">
+        <button
+          *ngFor="let s of [1,2,3,4,5]"
+          class="star-btn"
+          [class.filled]="s <= reviewModal.rating"
+          (click)="setRating(s)"
+          (mouseenter)="hoverRating = s"
+          (mouseleave)="hoverRating = 0"
+          [class.hover]="s <= hoverRating">
+          ★
+        </button>
+        <span class="star-label">{{ getRatingLabel(reviewModal.rating) }}</span>
+      </div>
+
+      <!-- Comment -->
+      <p class="modal-label">Komentarz <span class="optional">(opcjonalny)</span></p>
+      <textarea
+        class="modal-textarea"
+        placeholder="Napisz co sądzisz o tym boisku..."
+        [(ngModel)]="reviewModal.comment"
+        rows="4"
+        maxlength="500"
+      ></textarea>
+      <p class="char-count">{{ reviewModal.comment.length }} / 500</p>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" (click)="closeReview()">Anuluj</button>
+        <button class="btn-modal-submit"
+          [disabled]="reviewModal.rating === 0 || reviewModal.loading"
+          (click)="submitReview()">
+          <div class="btn-spinner" *ngIf="reviewModal.loading"></div>
+          <span *ngIf="!reviewModal.loading">Wyślij opinię ▶</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
