@@ -1,4 +1,5 @@
 <nav class="navbar">
+  
   <!-- Logo -->
   <a routerLink="/" class="logo">
     <div class="logo-emblem">
@@ -72,4 +73,9 @@
       </mat-menu>
     </div>
   </div>
+  <button class="theme-toggle-btn" (click)="toggleTheme()" title="Змінити тему">
+  <span class="theme-icon" [class.rotate]="isRotating">
+    {{ isDark ? '🌙' : '☀️' }}
+  </span>
+  </button>
 </nav>

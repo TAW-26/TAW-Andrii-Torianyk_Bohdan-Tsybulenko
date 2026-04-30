@@ -1,6 +1,6 @@
 .login-page {
   min-height: calc(100vh - 64px);
-  background: linear-gradient(180deg, #1A1A2E 0%, #2D2B55 100%);
+  background: var(--bg-main);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,12 +8,12 @@
 }
 
 .card {
-  background: white;
+  background: var(--card-bg-solid);
   border-radius: 24px;
   padding: 48px;
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 40px var(--shadow-color);
 }
 
 .logo {
@@ -37,14 +37,14 @@
 
 h2 {
   text-align: center;
-  color: #1A1A2E;
+  color: var(--text-main);
   font-size: 28px;
   margin: 0 0 8px;
 }
 
 .subtitle {
   text-align: center;
-  color: #6B7280;
+  color: var(--text-muted);
   margin: 0 0 24px;
 }
 
@@ -79,19 +79,19 @@ h2 {
   align-items: center;
   gap: 16px;
   margin: 24px 0;
-  color: #6B7280;
+  color: var(--text-muted);
 
   &::before, &::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: #E5E7EB;
+    background: var(--border-light);
   }
 }
 
 .register-link {
   text-align: center;
-  color: #6B7280;
+  color: var(--text-muted);
 
   a {
     color: #6C63FF;
