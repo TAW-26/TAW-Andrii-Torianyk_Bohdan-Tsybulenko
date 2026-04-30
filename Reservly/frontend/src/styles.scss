@@ -39,3 +39,75 @@ $reservly-temp-theme: mat.define-light-theme((
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// ── Theme variables ───────────────────────────
+:root {
+  --hero-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+  --bg-main: #ffffff;
+  --bg-alt: #f8f9fa;
+  
+  --text-main: #212529;
+  --text-muted: rgba(0, 0, 0, 0.6);
+  
+  --card-bg: rgba(0, 0, 0, 0.03);
+  --card-bg-hover: rgba(0, 0, 0, 0.08);
+  --card-bg-solid: #ffffff;
+  
+  --border-light: rgba(0, 0, 0, 0.1);
+  --border-color: rgba(108, 99, 255, 0.2);
+  
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* === ТЕМНА ТЕМА === */
+[data-theme="dark"] {
+  --hero-gradient: linear-gradient(135deg, #0D0D1A 0%, #1A1A2E 50%, #2D2B55 100%);
+  --bg-main: #0D0D1A;
+  --bg-alt: #111122;
+  
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-bg-hover: rgba(255, 255, 255, 0.08);
+  --card-bg-solid: rgba(255, 255, 255, 0.08);
+  
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(108, 99, 255, 0.2);
+  
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* 1. Якщо це звичайні HTML інпути */
+input, textarea, select {
+  color: var(--text-main) !important; /* Білий в темній, чорний в світлій */
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important; /* Напівпрозорий для підказок */
+}
+
+/* 2. Якщо ви використовуєте Angular Material (mat-form-field) */
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    /* Робимо фон інпута трохи світлішим за картку */
+    background-color: var(--card-bg) !important; 
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--text-muted) !important; /* Колір "Hasło*" */
+  }
+
+  .mat-mdc-input-element {
+    color: var(--text-main) !important; /* Колір тексту, який вводить юзер */
+    caret-color: #6C63FF !important; /* Колір курсора (палички, що блимає) */
+  }
+
+  /* Колір рамки/підкреслення, коли поле активне */
+  &.mat-focused .mat-mdc-form-field-label {
+    color: #6C63FF !important;
+  }
+}

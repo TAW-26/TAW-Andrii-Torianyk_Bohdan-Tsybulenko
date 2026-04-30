@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,8 +22,36 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
+  isDark = true;
+  isRotating = false; // Додано для анімації іконки
+
   constructor(public auth: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    const saved = localStorage.getItem('theme');
+    this.isDark = saved !== 'light';
+    this.applyTheme();
+  }
+
+  toggleTheme(): void {
+    // Запускаємо анімацію
+    this.isRotating = true;
+    
+    setTimeout(() => {
+      // Змінюємо тему посеред анімації
+      this.isDark = !this.isDark;
+      localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+      this.applyTheme();
+      
+      // Завершуємо анімацію
+      this.isRotating = false;
+    }, 150);
+  }
+
+  private applyTheme(): void {
+    document.body.setAttribute('data-theme', this.isDark ? 'dark' : 'light');
+  }
 
   getInitials(): string {
     const user = localStorage.getItem('user');
