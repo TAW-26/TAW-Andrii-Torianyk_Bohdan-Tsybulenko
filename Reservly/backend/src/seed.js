@@ -35,7 +35,6 @@ const seed = async () => {
   const createdUsers = await User.create(users);
   console.log(`Utworzono ${createdUsers.length} użytkowników`);
 
-  const admin = createdUsers[0];
   const jan   = createdUsers[1];
   const anna  = createdUsers[2];
 
