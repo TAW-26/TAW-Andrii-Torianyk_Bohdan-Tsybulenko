@@ -185,4 +185,4 @@ export class AdminComponent implements OnInit {
   getEmoji(type: string): string {
     return this.typeEmojis[type] || '🏟️';
   }
-}
+} 
