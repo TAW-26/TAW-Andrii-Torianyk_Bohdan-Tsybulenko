@@ -158,15 +158,15 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  justify-content: space-between; // Розсуває пошук і кнопки по краях
+  justify-content: space-between; 
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
 .search-wrap {
   position: relative;
-  flex: 1; // Пошук займає вільний простір...
-  max-width: 400px; // ...але не більше ніж 400px
+  flex: 1; 
+  max-width: 400px; 
   min-width: 240px;
 }
 
@@ -174,7 +174,7 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  flex-shrink: 0; // Забороняє кнопкам стискатися під тиском інпута
+  flex-shrink: 0; 
 }
 
 .search-icon {

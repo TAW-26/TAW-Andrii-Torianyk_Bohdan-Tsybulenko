@@ -2,13 +2,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const asyncHandler = require('../middleware/asyncHandler');
 
-// Generowanie tokenu JWT
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 
-// POST /api/auth/register – rejestracja nowego użytkownika
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -23,7 +21,6 @@ const register = asyncHandler(async (req, res) => {
   });
 });
 
-// POST /api/auth/login – logowanie użytkownika
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -38,7 +35,6 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/auth/me – dane zalogowanego użytkownika
 const getMe = asyncHandler(async (req, res) => {
   res.json({ id: req.user._id, name: req.user.name, email: req.user.email, role: req.user.role });
 });

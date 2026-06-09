@@ -2,13 +2,10 @@ const Reservation = require('../models/Reservation');
 const Field = require('../models/Field');
 const asyncHandler = require('../middleware/asyncHandler');
 
-// Pomocnicza funkcja: zamiana czasu HH:MM na minuty
 const timeToMinutes = (time) => {
   const [h, m] = time.split(':').map(Number);
   return h * 60 + m;
 };
-
-// Sprawdzenie czy nowa rezerwacja koliduje z istniejącymi
 const hasTimeConflict = (existing, startTime, endTime) => {
   const newStart = timeToMinutes(startTime);
   const newEnd   = timeToMinutes(endTime);
@@ -17,7 +14,6 @@ const hasTimeConflict = (existing, startTime, endTime) => {
   );
 };
 
-// GET /api/reservations/my – rezerwacje zalogowanego użytkownika
 const getMyReservations = asyncHandler(async (req, res) => {
   const reservations = await Reservation.find({ user: req.user._id })
     .populate('field', 'name type location')
@@ -25,7 +21,6 @@ const getMyReservations = asyncHandler(async (req, res) => {
   res.json(reservations);
 });
 
-// GET /api/reservations – wszystkie rezerwacje (tylko admin)
 const getAllReservations = asyncHandler(async (req, res) => {
   const reservations = await Reservation.find()
     .populate('user', 'name email')
@@ -48,11 +43,9 @@ const getFieldAvailability = asyncHandler(async (req, res) => {
   res.json(reservations);
 });
 
-// POST /api/reservations – tworzenie nowej rezerwacji
 const createReservation = asyncHandler(async (req, res) => {
   const { fieldId, date, startTime, endTime } = req.body;
 
-  // Walidacja kolejności czasu
   if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
     return res.status(400).json({ message: 'Godzina końca musi być późniejsza niż początku' });
   }
@@ -62,12 +55,10 @@ const createReservation = asyncHandler(async (req, res) => {
 
   const reservationDate = new Date(date);
 
-  // Zakaz rezerwacji w przeszłości
   if (reservationDate < new Date().setHours(0, 0, 0, 0)) {
     return res.status(400).json({ message: 'Nie można rezerwować w przeszłości' });
   }
 
-  // Sprawdzenie konfliktów z istniejącymi rezerwacjami
   const existing = await Reservation.find({
     field: fieldId,
     date: reservationDate,
@@ -90,14 +81,12 @@ const createReservation = asyncHandler(async (req, res) => {
   res.status(201).json(reservation);
 });
 
-// przeniesienie rezerwacji (zmiana daty/godziny)
 const updateReservation = asyncHandler(async (req, res) => {
   const { date, startTime, endTime } = req.body;
 
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) return res.status(404).json({ message: 'Rezerwacja nie została znaleziona' });
 
-  // Tylko właściciel może przenieść rezerwację
   if (reservation.user.toString() !== req.user._id.toString()) {
     return res.status(403).json({ message: 'Brak uprawnień do zmiany tej rezerwacji' });
   }
@@ -105,20 +94,16 @@ const updateReservation = asyncHandler(async (req, res) => {
   if (reservation.status === 'cancelled') {
     return res.status(400).json({ message: 'Nie można przenieść anulowanej rezerwacji' });
   }
-
-  // Walidacja kolejności czasu
   if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
     return res.status(400).json({ message: 'Godzina końca musi być późniejsza niż początku' });
   }
 
   const reservationDate = new Date(date);
 
-  // Zakaz rezerwacji w przeszłości
   if (reservationDate < new Date().setHours(0, 0, 0, 0)) {
     return res.status(400).json({ message: 'Nie można rezerwować w przeszłości' });
   }
 
-  // Sprawdzenie konfliktów – pomijamy aktualną rezerwację
   const existing = await Reservation.find({
     field: reservation.field,
     date: reservationDate,
@@ -139,7 +124,6 @@ const updateReservation = asyncHandler(async (req, res) => {
   res.json(reservation);
 });
 
-// anulowanie rezerwacji
 const cancelReservation = asyncHandler(async (req, res) => {
   const reservation = await Reservation.findById(req.params.id);
   if (!reservation) return res.status(404).json({ message: 'Rezerwacja nie została znaleziona' });
